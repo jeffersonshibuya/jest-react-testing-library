@@ -27,6 +27,9 @@
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "eslint-disable-next-line": "off",
-    "testing-library/no-render-in-setup": "off"
+    "testing-library/no-render-in-setup": "off",
+    "jest/no-focused-tests": "off",
+    "react/no-unescaped-entities": "off",
+    "jest/expect-expect": "off"
   }
 }

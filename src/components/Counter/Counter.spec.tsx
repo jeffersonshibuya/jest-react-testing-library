@@ -1,4 +1,11 @@
-import { render, screen } from "@testing-library/react";
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+import {
+  findByText,
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import React from "react";
 import { Counter } from "./Counter";
 import user from "@testing-library/user-event";
@@ -18,21 +25,47 @@ describe("Counter", () => {
     });
 
     describe('when the incrementor changes to 5 and "+" button is clicked', () => {
-      beforeEach(() => {
-        user.type(screen.getByLabelText(/Incrementor/), "{selectall}5");
+      beforeEach(async () => {
+        user.type(screen.getByLabelText(/Incrementor input/), "{selectall}5");
         user.click(
           screen.getByRole("button", { name: "Increment to Counter" })
         );
+        await screen.findByText("Current Count: 15");
       });
 
       it('renders "Current Count: 15"', () => {
         expect(screen.getByText("Current Count: 15")).toBeInTheDocument();
       });
+
+      // eslint-disable-next-line jest/expect-expect
+      it("renders too big, and will disappear after 300ms", async () => {
+        await waitForElementToBeRemoved(() =>
+          screen.queryByText("I am too small")
+        );
+      });
+
+      describe('when the incrementor changes to empty string and "+" button is clicked', () => {
+        beforeEach(() => {
+          user.type(
+            screen.getByLabelText(/Incrementor input/),
+            "{selectall}{delete}"
+          );
+          user.click(
+            screen.getByRole("button", { name: "Increment to Counter" })
+          );
+        });
+
+        it('renders "Current Count: 16"', async () => {
+          await waitFor(() => {
+            expect(screen.getByText("Current Count: 16")).toBeInTheDocument();
+          });
+        });
+      });
     });
 
     describe('when the incrementor changes to 25 and "-" button is clicked', () => {
       beforeEach(() => {
-        user.type(screen.getByLabelText(/Incrementor/), "{selectall}25");
+        user.type(screen.getByLabelText(/Incrementor input/), "{selectall}25");
         user.click(
           screen.getByRole("button", { name: "Decrement from Counter" })
         );
@@ -64,8 +97,10 @@ describe("Counter", () => {
         );
       });
 
-      it("defaultCount=0, and, clicked then counter = 1", () => {
-        expect(screen.getByText("Current Count: 1")).toBeInTheDocument();
+      it("renders 'Current Counter: 1'", async () => {
+        await waitFor(() => {
+          expect(screen.getByText("Current Count: 1")).toBeInTheDocument();
+        });
       });
     });
 
